@@ -11,14 +11,13 @@ jobs:
   enforce-reviews:
     runs-on: self-hosted
     steps:
-      - name: Check if PR is from a fork
-        id: fork_check
+      - name: Check 2 trusted collaborators rule
         run: |
-          echo "is_fork=${{ github.event.pull_request.head.repo.full_name != github.repository }}" >> $GITHUB_ENV
-
-      - name: Fetch approved reviews by collaborators
-        if: env.is_fork == 'true'
-        run: |
+          if "${{ github.event.pull_request.head.repo.full_name == github.repository }}"; then
+            echo "✅ PR is not from fork, 1 collaborator approval is enough"
+            exit 0
+          fi
+          
           PR_NUMBER=${{ github.event.pull_request.number }}
           REPO="${{ github.repository }}"
 
